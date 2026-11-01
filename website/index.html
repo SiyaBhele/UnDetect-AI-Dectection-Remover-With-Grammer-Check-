@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#5b42dc">
+  <title>Call Text Cleaner</title>
+  <link rel="icon" href="assets/call-text-cleaner.svg" type="image/svg+xml">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172554;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --paper: #fff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 5% 0%, rgba(196, 181, 253, .48), transparent 34rem),
+        radial-gradient(ellipse at 95% 8%, rgba(103, 232, 249, .42), transparent 30rem),
+        #f5f7ff;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, textarea { font: inherit; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem max(1.25rem, calc((100vw - 1120px) / 2));
+      border-bottom: 1px solid rgba(226, 232, 240, .8);
+      background: rgba(255, 255, 255, .76);
+      backdrop-filter: blur(14px);
+    }
+    .brand { display: flex; align-items: center; gap: .75rem; }
+    .brand-mark {
+      display: grid;
+      width: 2.7rem;
+      height: 2.7rem;
+      place-items: center;
+      border-radius: .9rem;
+      color: #fff;
+      background: linear-gradient(140deg, #7c3aed, #2563eb 65%, #06b6d4);
+      box-shadow: 0 8px 18px rgba(79, 70, 229, .25);
+      font-weight: 900;
+    }
+    .brand-name { font-size: 1.08rem; font-weight: 800; letter-spacing: -.04em; }
+    .brand-caption { margin-top: .12rem; color: var(--muted); font-size: .75rem; }
+    .local-pill {
+      padding: .45rem .75rem;
+      border: 1px solid #bbf7d0;
+      border-radius: 999px;
+      color: #15803d;
+      background: #f0fdf4;
+      font-size: .76rem;
+      font-weight: 700;
+    }
+    .shell { width: min(1120px, calc(100% - 2rem)); margin: 0 auto; padding: 2rem 0 4rem; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(1.6rem, 5vw, 3.3rem);
+      border-radius: 1.8rem;
+      color: white;
+      background: linear-gradient(120deg, #4f46e5 0%, #7c3aed 48%, #c026d3 100%);
+      box-shadow: 0 24px 60px rgba(91, 67, 207, .22);
+    }
+    .hero::after {
+      position: absolute;
+      top: -8rem;
+      right: -3rem;
+      width: 24rem;
+      height: 24rem;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 50%;
+      box-shadow: 0 0 0 2.8rem rgba(255,255,255,.06), 0 0 0 5.6rem rgba(255,255,255,.04);
+      content: "";
+      pointer-events: none;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .38rem .72rem;
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      font-size: .76rem;
+      font-weight: 700;
+    }
+    .eyebrow-dot { width: .48rem; height: .48rem; border-radius: 50%; background: #86efac; }
+    .hero h1 { max-width: 720px; margin: 1.2rem 0 .75rem; font-size: clamp(2.15rem, 5vw, 3.7rem); line-height: 1.05; letter-spacing: -.055em; }
+    .hero p { max-width: 660px; margin: 0; color: rgba(255,255,255,.84); font-size: 1.02rem; line-height: 1.7; }
+    .hero-note { margin-top: 1rem !important; font-size: .84rem !important; }
+    .feature-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .85rem; margin: 1.2rem 0; }
+    .feature-card {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      min-height: 5.1rem;
+      padding: 1rem;
+      border: 1px solid rgba(226,232,240,.9);
+      border-radius: 1rem;
+      background: rgba(255,255,255,.88);
+      box-shadow: 0 8px 22px rgba(30,41,59,.04);
+    }
+    .feature-icon { display: grid; width: 2.35rem; height: 2.35rem; flex: 0 0 auto; place-items: center; border-radius: .8rem; font-size: 1.1rem; }
+    .feature-card:nth-child(1) .feature-icon { color: #6d28d9; background: #ede9fe; }
+    .feature-card:nth-child(2) .feature-icon { color: #0e7490; background: #cffafe; }
+    .feature-card:nth-child(3) .feature-icon { color: #15803d; background: #dcfce7; }
+    .feature-card:nth-child(4) .feature-icon { color: #c2410c; background: #ffedd5; }
+    .feature-title { font-size: .82rem; font-weight: 800; }
+    .feature-detail { margin-top: .18rem; color: var(--muted); font-size: .7rem; line-height: 1.4; }
+    .panel {
+      overflow: hidden;
+      border: 1px solid rgba(226,232,240,.95);
+      border-radius: 1.3rem;
+      background: var(--paper);
+      box-shadow: 0 15px 40px rgba(30,41,59,.07);
+    }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.2rem 1.35rem; border-bottom: 1px solid #eef2ff; }
+    .panel-title { font-size: 1rem; font-weight: 800; }
+    .panel-subtitle { margin-top: .2rem; color: var(--muted); font-size: .78rem; }
+    .input-wrap { padding: 1.2rem 1.35rem; }
+    .text-input, .text-output {
+      display: block;
+      width: 100%;
+      min-height: 260px;
+      padding: 1rem;
+      resize: vertical;
+      border: 1px solid #dbe3f0;
+      border-radius: .9rem;
+      outline: none;
+      color: #1e293b;
+      background: #fbfcff;
+      font: .9rem/1.65 ui-monospace, SFMono-Regular, Menlo, monospace;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .text-input:focus { border-color: #8b5cf6; box-shadow: 0 0 0 4px rgba(139,92,246,.12); }
+    .text-output { min-height: 320px; background: #f8faff; }
+    .editor-meta { display: flex; justify-content: space-between; gap: .8rem; padding-top: .65rem; color: var(--muted); font-size: .75rem; }
+    .controls { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+    .check-row { display: flex; align-items: flex-start; gap: .65rem; max-width: 650px; color: #475569; font-size: .82rem; line-height: 1.5; }
+    .check-row input { margin-top: .18rem; accent-color: #7c3aed; }
+    .primary-btn, .secondary-btn, .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .55rem;
+      border: 0;
+      border-radius: .8rem;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform .15s, box-shadow .15s, background .15s;
+    }
+    .primary-btn { padding: .9rem 1.25rem; color: white; background: linear-gradient(110deg, #6d28d9, #4f46e5 65%, #0891b2); box-shadow: 0 8px 18px rgba(79,70,229,.23); }
+    .primary-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(79,70,229,.3); }
+    .secondary-btn { padding: .65rem .9rem; border: 1px solid var(--line); color: #475569; background: #fff; font-size: .8rem; }
+    .secondary-btn:hover { background: #f8fafc; }
+    .tabs { display: flex; gap: .4rem; padding: .35rem; border: 1px solid #e7eaf3; border-radius: .85rem; background: #f5f6fb; }
+    .tab-btn { padding: .58rem .85rem; color: #64748b; background: transparent; font-size: .8rem; }
+    .tab-btn.active { color: #5b21b6; background: white; box-shadow: 0 1px 5px rgba(15,23,42,.12); }
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .compare-label { display: flex; align-items: center; gap: .45rem; margin-bottom: .55rem; font-size: .82rem; font-weight: 800; }
+    .compare-label.before { color: #b45309; }
+    .compare-label.after { color: #15803d; }
+    .status-note { margin: 1rem 1.35rem 0; padding: .8rem 1rem; border: 1px solid #dbeafe; border-radius: .8rem; color: #1e40af; background: #eff6ff; font-size: .82rem; line-height: 1.5; }
+    .status-note.error { border-color: #fecaca; color: #b91c1c; background: #fef2f2; }
+    .input-error { margin: 1rem 0 0; }
+    .suggestions { margin: 1rem 1.35rem; padding: 1rem 1.1rem; border: 1px solid #fde68a; border-radius: .9rem; background: #fffbeb; color: #713f12; font-size: .84rem; line-height: 1.6; }
+    .suggestions h2 { margin: 0 0 .5rem; font-size: .95rem; }
+    .suggestions li + li { margin-top: .45rem; }
+    .result-meta { display: flex; justify-content: space-between; gap: .7rem; flex-wrap: wrap; padding: .8rem 1.35rem 1.2rem; color: var(--muted); font-size: .76rem; }
+    .result-actions { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; padding: 1rem 1.35rem; border-top: 1px solid #eef2ff; background: #fafbff; }
+    .footer-note { padding: 1.2rem .25rem; color: #64748b; text-align: center; font-size: .76rem; line-height: 1.6; }
+    .hidden { display: none !important; }
+    @media (max-width: 760px) {
+      .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .compare-grid { grid-template-columns: 1fr; }
+      .topbar { padding-right: 1rem; padding-left: 1rem; }
+    }
+    @media (max-width: 480px) {
+      .shell { width: min(100% - 1rem, 1120px); padding-top: .7rem; }
+      .hero { border-radius: 1.2rem; }
+      .feature-grid { gap: .55rem; }
+      .feature-card { align-items: flex-start; padding: .72rem; }
+      .feature-icon { width: 2rem; height: 2rem; }
+      .panel-head, .input-wrap { padding-right: .9rem; padding-left: .9rem; }
+      .controls { align-items: stretch; }
+      .primary-btn { width: 100%; }
+      .local-pill { font-size: .68rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="assets/call-text-cleaner.svg" alt="" width="44" height="44">
+      <div><div class="brand-name">Call Text Cleaner</div><div class="brand-caption">Thoughtful text cleanup</div></div>
+    </div>
+    <span class="local-pill">● Local cleanup</span>
+  </header>
+  <main class="shell">
+    <section class="hero">
+      <span class="eyebrow"><span class="eyebrow-dot"></span> A clearer writing workspace</span>
+      <h1>Clean up text.<br>Keep your meaning.</h1>
+      <p>Remove selected hidden formatting artifacts and execution-log lines, then review exactly what changed.</p>
+      <p class="hero-note">This tool does not identify AI-written text or predict AI-detector results.</p>
+    </section>
+    <section class="feature-grid" aria-label="What this tool does">
+      <article class="feature-card"><span class="feature-icon">✳</span><div><div class="feature-title">Unicode cleanup</div><div class="feature-detail">Selected invisible spaces and marks</div></div></article>
+      <article class="feature-card"><span class="feature-icon">⌘</span><div><div class="feature-title">Log-line cleanup</div><div class="feature-detail">Phase and execution headers</div></div></article>
+      <article class="feature-card"><span class="feature-icon">⇄</span><div><div class="feature-title">Before &amp; after</div><div class="feature-detail">Compare original with cleaned text</div></div></article>
+      <article class="feature-card"><span class="feature-icon">✓</span><div><div class="feature-title">Grammar suggestions</div><div class="feature-detail">Optional LanguageTool review</div></div></article>
+    </section>
+    <section class="panel" aria-labelledby="documentTitle">
+      <div class="panel-head">
+        <div><div class="panel-title" id="documentTitle">Your document</div><div class="panel-subtitle">Paste text to clean up formatting artifacts.</div></div>
+        <button type="button" class="secondary-btn" id="sampleButton">Try a sample</button>
+      </div>
+      <div class="input-wrap">
+        <label class="hidden" for="documentText">Text to clean</label>
+        <textarea class="text-input" id="documentText" placeholder="Paste or type your text here..."></textarea>
+        <div class="editor-meta"><span id="inputCount">0 characters · 0 words</span><span>Text stays on this device unless grammar check is selected.</span></div>
+        <div class="controls">
+          <label class="check-row">
+            <input type="checkbox" id="grammarCheck">
+            <span>Check grammar with the free public LanguageTool API. Your cleaned text will be sent to this third-party service (20,000 character limit); suggestions are never applied automatically.</span>
+          </label>
+          <button type="button" class="primary-btn" id="cleanButton">Clean and compare <span aria-hidden="true">→</span></button>
+        </div>
+        <p class="status-note error input-error hidden" id="inputError" role="alert"></p>
+      </div>
+    </section>
+    <section class="panel hidden" id="resultPanel" aria-labelledby="resultTitle" style="margin-top:1.2rem">
+      <div class="panel-head">
+        <div><div class="panel-title" id="resultTitle">Document review</div><div class="panel-subtitle">Switch tabs to inspect the result or compare both versions.</div></div>
+        <div class="tabs" role="tablist" aria-label="Text result views">
+          <button type="button" class="tab-btn active" id="cleanTab" role="tab" aria-selected="true">Cleaned text</button>
+          <button type="button" class="tab-btn" id="compareTab" role="tab" aria-selected="false">Compare changes</button>
+        </div>
+      </div>
+      <div id="cleanView" class="input-wrap" role="tabpanel">
+        <div class="compare-label after">✓ Cleaned text</div>
+        <textarea id="cleanedText" class="text-output" readonly aria-label="Cleaned text"></textarea>
+        <div class="editor-meta"><span id="cleanedCount">0 characters</span><span id="changeSummary">No changes made</span></div>
+      </div>
+      <div id="compareView" class="input-wrap hidden" role="tabpanel">
+        <div class="compare-grid">
+          <div><div class="compare-label before">● Original text</div><textarea id="originalCompare" class="text-output" readonly aria-label="Original text"></textarea></div>
+          <div><div class="compare-label after">✓ Cleaned text</div><textarea id="cleanedCompare" class="text-output" readonly aria-label="Cleaned comparison text"></textarea></div>
+        </div>
+        <div class="editor-meta"><span id="originalCount">Original: 0 characters</span><span id="compareCleanedCount">Cleaned: 0 characters</span></div>
+      </div>
+      <p class="status-note" id="statusNote" role="status">Cleanup runs locally in your browser.</p>
+      <section class="suggestions hidden" id="suggestionsPanel" aria-live="polite"></section>
+      <div class="result-actions">
+        <span class="panel-subtitle">Local cleanup does not determine whether text was AI-written.</span>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+          <button type="button" class="secondary-btn" id="copyButton">Copy cleaned text</button>
+          <button type="button" class="secondary-btn" id="downloadButton">Download .txt</button>
+        </div>
+      </div>
+    </section>
+    <p class="footer-note">Local cleanup handles only the artifacts documented here. <a href="docs/index.html">Read the feature and privacy notes</a>.</p>
+  </main>
+  <script>
+    'use strict';
+    const input = document.getElementById('documentText');
+    const inputCount = document.getElementById('inputCount');
+    const resultPanel = document.getElementById('resultPanel');
+    const statusNote = document.getElementById('statusNote');
+    const inputError = document.getElementById('inputError');
+    const suggestionsPanel = document.getElementById('suggestionsPanel');
+    const maxGrammarLength = 20000;
+
+    function updateInputCount() {
+      const value = input.value;
+      const words = value.trim() ? value.trim().split(/\s+/).length : 0;
+      inputCount.textContent = value.length + ' characters · ' + words + ' words';
+    }
+
+    function cleanText(original) {
+      let text = original.replace(/\r\n?/g, '\n');
+      const invisible = text.match(/[\u200B-\u200D\uFEFF\u202F\u00A0\u00AD]/g) || [];
+      text = text.replace(/[\u200B-\u200D\uFEFF\u202F\u00A0\u00AD]/g, ' ');
+
+      const logMatches = text.match(/^[ \t]*(?:Phase \d+:|Execution Log:)[^\n]*(?:\n|$)/gim) || [];
+      text = text.replace(/^[ \t]*(?:Phase \d+:|Execution Log:)[^\n]*(?:\n|$)/gim, '');
+
+      const boldMatches = text.match(/\*\*([^*]+)\*\*:/g) || [];
+      text = text.replace(/\*\*([^*]+)\*\*:/g, '$1:');
+      const beforeWhitespaceNormalization = text;
+      text = text.split('\n').map(line => line.replace(/^[ \t]+|[ \t]+$/g, '').replace(/[ \t]{2,}/g, ' ')).join('\n');
+      text = text.replace(/\n{3,}/g, '\n\n').trim();
+
+      return {
+        text,
+        counts: {
+          invisible: invisible.length,
+          logLines: logMatches.length,
+          boldLeadIns: boldMatches.length,
+          whitespaceNormalized: beforeWhitespaceNormalization !== text
+        }
+      };
+    }
+
+    function selectView(compare) {
+      document.getElementById('cleanView').classList.toggle('hidden', compare);
+      document.getElementById('compareView').classList.toggle('hidden', !compare);
+      document.getElementById('cleanTab').classList.toggle('active', !compare);
+      document.getElementById('compareTab').classList.toggle('active', compare);
+      document.getElementById('cleanTab').setAttribute('aria-selected', String(!compare));
+      document.getElementById('compareTab').setAttribute('aria-selected', String(compare));
+    }
+
+    function renderSuggestions(matches) {
+      suggestionsPanel.replaceChildren();
+      suggestionsPanel.classList.remove('hidden');
+      const heading = document.createElement('h2');
+      heading.textContent = matches.length ? 'Grammar suggestions for review' : 'No grammar suggestions returned';
+      suggestionsPanel.append(heading);
+      if (!matches.length) return;
+      const list = document.createElement('ol');
+      for (const match of matches) {
+        const item = document.createElement('li');
+        const message = document.createElement('span');
+        message.textContent = match.message;
+        item.append(message);
+        const replacements = (match.replacements || []).slice(0, 3).map(item => item.value).filter(Boolean);
+        if (replacements.length) {
+          const suggestion = document.createElement('span');
+          suggestion.textContent = ' Suggested: ' + replacements.join(' / ');
+          item.append(suggestion);
+        }
+        list.append(item);
+      }
+      suggestionsPanel.append(list);
+    }
+
+    async function checkGrammar(text) {
+      const body = new URLSearchParams({ text, language: 'auto' });
+      const response = await fetch('https://api.languagetool.org/v2/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        body
+      });
+      if (!response.ok) throw new Error('LanguageTool returned HTTP ' + response.status);
+      const result = await response.json();
+      if (!Array.isArray(result.matches)) throw new Error('LanguageTool returned an invalid response');
+      return result.matches;
+    }
+
+    async function cleanAndCompare() {
+      const original = input.value;
+      if (!original.trim()) {
+        input.focus();
+        resultPanel.classList.add('hidden');
+        inputError.textContent = 'Enter some text before cleaning.';
+        inputError.classList.remove('hidden');
+        return;
+      }
+
+      inputError.classList.add('hidden');
+      const result = cleanText(original);
+      document.getElementById('cleanedText').value = result.text;
+      document.getElementById('originalCompare').value = original.replace(/\r\n?/g, '\n');
+      document.getElementById('cleanedCompare').value = result.text;
+      document.getElementById('cleanedCount').textContent = result.text.length + ' characters';
+      document.getElementById('originalCount').textContent = 'Original: ' + original.length + ' characters';
+      document.getElementById('compareCleanedCount').textContent = 'Cleaned: ' + result.text.length + ' characters';
+      const total = result.counts.invisible + result.counts.logLines + result.counts.boldLeadIns;
+      const summaryParts = [];
+      if (result.counts.invisible) summaryParts.push(result.counts.invisible + ' invisible characters');
+      if (result.counts.logLines) summaryParts.push(result.counts.logLines + ' log lines');
+      if (result.counts.boldLeadIns) summaryParts.push(result.counts.boldLeadIns + ' bold lead-ins');
+      if (result.counts.whitespaceNormalized) summaryParts.push('spacing normalized');
+      document.getElementById('changeSummary').textContent = summaryParts.length
+        ? summaryParts.join(' · ') + ' changed'
+        : 'No supported artifacts found; text preserved';
+      suggestionsPanel.classList.add('hidden');
+      suggestionsPanel.replaceChildren();
+      selectView(false);
+      resultPanel.classList.remove('hidden');
+      statusNote.classList.remove('error');
+      statusNote.textContent = 'Local cleanup complete. Original text is preserved in the comparison tab.';
+
+      if (document.getElementById('grammarCheck').checked) {
+        if (result.text.length > maxGrammarLength) {
+          statusNote.textContent = 'LanguageTool checks are limited to 20,000 characters. Local cleanup is still complete; no grammar request was sent.';
+          statusNote.classList.add('error');
+          return;
+        }
+        statusNote.textContent = 'Sending cleaned text to LanguageTool for grammar suggestions…';
+        try {
+          const matches = await checkGrammar(result.text);
+          renderSuggestions(matches);
+          statusNote.textContent = 'LanguageTool check complete. Suggestions are advisory and have not been applied.';
+        } catch (error) {
+          statusNote.textContent = 'Grammar check failed: ' + error.message + '. Local cleanup is still available; no grammar suggestions were applied.';
+          statusNote.classList.add('error');
+        }
+      }
+      resultPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    input.addEventListener('input', () => {
+      updateInputCount();
+      if (input.value.trim()) inputError.classList.add('hidden');
+    });
+    document.getElementById('sampleButton').addEventListener('click', () => {
+      input.value = 'Phase 1: Example log\nA copied sentence with a zero-width character: here\u200Bthere.\nExecution Log: temporary trace\n**Heading**: This final sentence stays unchanged.';
+      updateInputCount();
+      input.focus();
+    });
+    document.getElementById('cleanButton').addEventListener('click', cleanAndCompare);
+    document.getElementById('cleanTab').addEventListener('click', () => selectView(false));
+    document.getElementById('compareTab').addEventListener('click', () => selectView(true));
+    document.getElementById('copyButton').addEventListener('click', async () => {
+      const value = document.getElementById('cleanedText').value;
+      try {
+        await navigator.clipboard.writeText(value);
+        statusNote.textContent = 'Cleaned text copied to clipboard.';
+        statusNote.classList.remove('error');
+      } catch {
+        statusNote.textContent = 'Clipboard access is unavailable in this browser. Select and copy the cleaned text manually.';
+        statusNote.classList.add('error');
+      }
+    });
+    document.getElementById('downloadButton').addEventListener('click', () => {
+      const value = document.getElementById('cleanedText').value;
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(new Blob([value], { type: 'text/plain;charset=utf-8' }));
+      link.download = 'cleaned-text.txt';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+.DS_Store
+output/
+
+android/build/*
+!android/build/Call-Text-Cleaner-debug.apk
+
+dist/*.zip

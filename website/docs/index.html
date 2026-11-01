@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#5b42dc">
+  <title>Call Text Cleaner — Help and privacy</title>
+  <link rel="icon" href="../assets/call-text-cleaner.svg" type="image/svg+xml">
+  <style>
+    :root { color-scheme: light; --ink:#172554; --muted:#64748b; --line:#e2e8f0; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:linear-gradient(140deg,#f5f7ff,#effcff); font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    header { padding:1rem max(1rem,calc((100vw - 850px)/2)); background:#fff; border-bottom:1px solid var(--line); }
+    header a { color:#5b21b6; font-weight:800; text-decoration:none; }
+    main { width:min(850px,calc(100% - 2rem)); margin:2rem auto; padding:clamp(1.2rem,4vw,2.4rem); border:1px solid var(--line); border-radius:1.25rem; background:#fff; box-shadow:0 15px 40px rgba(30,41,59,.07); }
+    h1 { margin-top:0; line-height:1.1; font-size:clamp(2rem,5vw,3rem); }
+    h2 { margin-top:2rem; font-size:1.25rem; }
+    .note { padding:1rem; border-radius:.8rem; color:#1e40af; background:#eff6ff; }
+    code { padding:.1rem .3rem; border-radius:.3rem; background:#f1f5f9; }
+  </style>
+</head>
+<body>
+  <header><a href="../index.html">← Call Text Cleaner</a></header>
+  <main>
+    <h1>Help, features &amp; privacy</h1>
+    <p>Call Text Cleaner is a small, transparent text-formatting utility. It does not identify AI writing, rewrite style, or predict how a detector will classify a document.</p>
+    <h2>What local cleanup changes</h2>
+    <ul>
+      <li>Replaces U+200B–U+200D, U+FEFF, U+202F, U+00A0 and U+00AD characters with regular spaces.</li>
+      <li>Removes complete lines beginning with <code>Phase [number]:</code> or <code>Execution Log:</code>, ignoring case.</li>
+      <li>Removes Markdown bold markers from titles of the form <code>**Title**:</code>.</li>
+      <li>Trims line-edge spaces, collapses repeated horizontal spaces, and reduces runs of blank lines.</li>
+    </ul>
+    <h2>Review and export</h2>
+    <p>After selecting <strong>Clean and compare</strong>, use the two result tabs to inspect the cleaned text or compare the original and cleaned versions side by side. Copy or download the cleaned text when you are satisfied.</p>
+    <h2>Optional grammar service</h2>
+    <p>The LanguageTool checkbox is off by default. When selected, the cleaned text is sent from your browser to the public LanguageTool API for suggestions (maximum 20,000 characters). Suggestions are displayed for your review and are not applied automatically. A network or service error does not undo local cleanup.</p>
+    <h2>Privacy</h2>
+    <p>Without grammar checking, text is processed in the browser and is not uploaded by this static website. Downloading is initiated locally. Selecting grammar checking sends the text to a third party. Hosting the website on a web server may have its own access logs.</p>
+    <h2>Android app</h2>
+    <p>The Android APK packages this same website in a local WebView, so artifact cleanup and comparison work offline. The internet permission is used only if you explicitly select the optional LanguageTool check. The APK is a debug build and is not published through an app store.</p>
+    <p>To rebuild the APK from the workspace folder, run <code>sh android/build-apk.sh</code>. To install it on an attached Android device and launch it, run <code>sh android/build-apk.sh --install</code>. The build script caps Java's heap at 4 GB.</p>
+    <p class="note"><strong>Important:</strong> These rules only handle the specific formatting patterns listed above. Unicode characters and writing styles do not prove who authored a text, and cleanup cannot guarantee any AI-detector result.</p>
+  </main>
+</body>
+</html>
