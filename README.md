@@ -21,6 +21,10 @@ A lightweight, privacy-conscious text sanitizer and formatting cleaner available
 - **Optional Grammar Assistance:** Integrates an opt-in check using the public LanguageTool API for grammar suggestions. *Note: Suggestions are never applied automatically, and enabling this feature sends your cleaned text to a third-party server.*
 
 ---
+Before 
+<img width="1036" height="954" alt="image" src="https://github.com/user-attachments/assets/d3abf326-4313-4cba-960a-c6b60760ff65" />
+After 
+<img width="1469" height="770" alt="image" src="https://github.com/user-attachments/assets/7adf7412-5c42-41ac-a6ee-430e1e501f33" />
 
 ## Project Structure
 
